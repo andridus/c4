@@ -1,13 +1,13 @@
 defmodule C4.Component do
   @moduledoc false
   use Phoenix.LiveComponent
-  import C4.Common
+  import C4.Helpers.Web, only: [clean_assigns: 1]
   defmacro __using__(_opts) do
     quote do
       use Phoenix.LiveComponent
       @before_compile unquote(__MODULE__)
       import C4.Component
-      import C4.Common
+      import C4.Helpers.Web, only: [clean_assigns: 1]
       alias C4.Dom, as: H
 
       Module.register_attribute(__MODULE__, :fields, accumulate: true)

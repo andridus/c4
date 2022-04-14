@@ -1,5 +1,11 @@
 defmodule C4.Helpers.Web do
   @moduledoc false
+
+  def clean_assigns(assigns) do
+    assigns
+    |> Map.drop([:flash, :__event__, :__opts__])
+  end
+  
   def get_paths(uri, params \\ %{}) do
     %URI{path: path} = URI.parse(uri)
 
