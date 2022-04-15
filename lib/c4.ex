@@ -1,5 +1,5 @@
 defmodule C4 do
-  def hello do
-    :world
+  def repo do
+    Application.get_env(:c4, :repo)
   end
 end
