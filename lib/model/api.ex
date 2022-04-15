@@ -6,6 +6,7 @@ defmodule C4.Api do
     quote do
       import Ecto.Query
       import C4.Api
+      
 
       def schema do
         @schema
@@ -73,7 +74,6 @@ defmodule C4.Api do
         params
         |> Enum.reduce(schema(), fn
           {:where, params}, sch ->
-            IO.inspect params
             params = Enum.reduce(params, sch, fn 
               {{:ilike, key}, value}, sch ->
                 value = "%#{value}%"
@@ -136,13 +136,13 @@ defmodule C4.Api do
   end
 
   def repo do
-    Application.get_env(:C4, :repo)
+   C4.repo()
   end
 
   def preload_json(model, include \\ []) do
     includes =
       model
-      |> C4.repo().preload(include)
+      |> repo().preload(include)
       |> Map.take(include)
       |> Map.to_list()
       |> Enum.map(fn {key, value} ->
