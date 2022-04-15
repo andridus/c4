@@ -20,24 +20,26 @@ defmodule C4.Api do
         schema().json() ++ append
       end
 
-      def get_by(id, params \\ [where: [], order: [asc: :inserted_at]]), 
-          do: get_by(id, params)
-              |> case do
-                nil -> {:error, :not_found}
-                user -> {:ok, user}
-              end
+      def get_by(id, params \\ [where: [], order: [asc: :inserted_at]]) do
+        get_by!(id, params)
+        |> case do
+          nil -> {:error, :not_found}
+          data -> {:ok, data}
+        end
+      end
       def get_by!(params \\ [where: [], order: [asc: :inserted_at]]) do
         params
         |> default_params()
         |> repo().one()
       end
 
-      def get(id, params \\ [where: [], order: [asc: :inserted_at]]), 
-          do: get(id, params)
-              |> case do
-                nil -> {:error, :not_found}
-                user -> {:ok, user}
-              end
+      def get(id, params \\ [where: [], order: [asc: :inserted_at]]) do 
+        get!(id, params)
+        |> case do
+          nil -> {:error, :not_found}
+          data -> {:ok, data}
+        end
+      end
 
       def get!(id, params \\ [where: [], order: [asc: :inserted_at]]) do
         params
