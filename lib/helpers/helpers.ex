@@ -1,4 +1,4 @@
-defmodule C4.Utils do
+defmodule C4.Helpers do
   @moduledoc false
   #### convert function
   def convert(value, :string), do: to_string(value)
