@@ -15,7 +15,7 @@ defmodule C4.Helpers.View do
         assigns
       else
         C4.Value.get(assigns, object)
-        |> C4.Utils.maybe([])
+        |> C4.Helpers.maybe([])
         |> Enum.find(fn {x, _} -> x == idx end)
         |> case do
           nil -> nil
@@ -59,7 +59,7 @@ defmodule C4.Helpers.View do
         assigns
       else
         C4.Value.get(assigns, object)
-        |> C4.Utils.maybe([])
+        |> C4.Helpers.maybe([])
         |> Enum.find(fn {x, _} -> x == idx end)
         |> case do
           nil -> nil
@@ -116,7 +116,7 @@ defmodule C4.Helpers.View do
 
         :select ->
           ~H"""
-            <select id={C4.Utils.unique(5)} class="px-2 py-1 border z-50 cursor-pointer border-0 flex-1 group relative"
+            <select id={C4.Helpers.unique(5)} class="px-2 py-1 border z-50 cursor-pointer border-0 flex-1 group relative"
               disabled={disabled}
               phx-click={atom}
               phx-keyup={atom}
@@ -136,7 +136,7 @@ defmodule C4.Helpers.View do
           ~H"""
             <div class="border min-w-full flex flex-wrap items-center">
             <%= current_value |> Enum.with_index() |> Enum.map(fn {t, _idxl} ->%>
-              <div id={C4.Utils.unique(10)} class="flex-none rounded-xs">
+              <div id={C4.Helpers.unique(10)} class="flex-none rounded-xs">
                 <div class="bg-gray-200  m-1 ">
                   <%= if disabled do %>
                     <span class="mx-2 inline-block pointer-events-none"> <%= t %></span>
@@ -158,7 +158,7 @@ defmodule C4.Helpers.View do
               </div>
             <% end)%>
             <%= unless disabled do %>
-                <select id={C4.Utils.unique(5)} class="px-2 py-1 border z-50 cursor-pointer border-0 flex-1 group relative"
+                <select id={C4.Helpers.unique(5)} class="px-2 py-1 border z-50 cursor-pointer border-0 flex-1 group relative"
                   disabled={disabled}
                   phx-click={atom}
                   phx-keyup={atom}
@@ -291,7 +291,7 @@ defmodule C4.Helpers.View do
           ~H"""
            <div class="border min-w-full flex flex-wrap items-center">
             <%= current_value |> Enum.with_index() |> Enum.map(fn {t, _idx} ->%>
-              <img id={C4.Utils.unique(10)} src={t} class="border flex-none rounded-xs w-32 h-32" />
+              <img id={C4.Helpers.unique(10)} src={t} class="border flex-none rounded-xs w-32 h-32" />
             <% end)%>
           </div>
           """
@@ -300,7 +300,7 @@ defmodule C4.Helpers.View do
           ~H"""
             <div class="border min-w-full flex flex-wrap items-center">
             <%= current_value |> Enum.with_index() |> Enum.map(fn {t, idx} ->%>
-              <div id={C4.Utils.unique(10)} class="flex-none rounded-xs">
+              <div id={C4.Helpers.unique(10)} class="flex-none rounded-xs">
                 <div class="bg-gray-200  m-1 ">
                   <%= if disabled do %>
                     <span class="mx-2 inline-block pointer-events-none"> <%= t %></span>
@@ -351,7 +351,7 @@ defmodule C4.Helpers.View do
     ~H"""
       <div class="flex items-center">
         <label class="py-2 font-bold text-xs"> <%= get(assigns, fields_type, field, :label) %>  </label>
-        <.live_component id={C4.Utils.unique(15)} module={C4.Components.Tooltip} content={get(assigns, fields_type, field, :tip)} style="z-index: 200"/>
+        <.live_component id={C4.Helpers.unique(15)} module={C4.Components.Tooltip} content={get(assigns, fields_type, field, :tip)} style="z-index: 200"/>
       </div>
     """
   end

@@ -1,6 +1,6 @@
 defmodule C4.Api do
   @moduledoc false
-  alias C4.Utils
+  alias C4.Helpers
 
   defmacro __using__(_) do
     quote do
@@ -20,13 +20,26 @@ defmodule C4.Api do
         schema().json() ++ append
       end
 
-      def get_by(params \\ [where: [], order: [asc: :inserted_at]]) do
+      def get_by(id, params \\ [where: [], order: [asc: :inserted_at]]), 
+          do: get_by(id, params)
+              |> case do
+                nil -> {:error, :not_found}
+                user -> {:ok, user}
+              end
+      def get_by!(params \\ [where: [], order: [asc: :inserted_at]]) do
         params
         |> default_params()
         |> repo().one()
       end
 
-      def get(id, params \\ [where: [], order: [asc: :inserted_at]]) do
+      def get(id, params \\ [where: [], order: [asc: :inserted_at]]), 
+          do: get(id, params)
+              |> case do
+                nil -> {:error, :not_found}
+                user -> {:ok, user}
+              end
+
+      def get!(id, params \\ [where: [], order: [asc: :inserted_at]]) do
         params
         |> default_params()
         |> repo().get(id)
@@ -149,9 +162,9 @@ defmodule C4.Api do
         module = get_module(model, key, include)
 
         if is_list(value) do
-          {key, Enum.map(value, &(apply(module, :json, [&1]) |> Utils.unwrap()))}
+          {key, Enum.map(value, &(apply(module, :json, [&1]) |> Helpers.unwrap()))}
         else
-          {key, apply(module, :json, [value]) |> Utils.unwrap()}
+          {key, apply(module, :json, [value]) |> Helpers.unwrap()}
         end
       end)
       |> Map.new()
@@ -164,7 +177,7 @@ defmodule C4.Api do
     |> Map.get(:__struct__)
     |> to_string()
     |> String.replace("Schema", "Api")
-    |> Utils.atomize()
+    |> Helpers.atomize()
   end
 
   ########################
