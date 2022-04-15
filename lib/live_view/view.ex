@@ -2,6 +2,7 @@ defmodule C4.View do
   @moduledoc false
   use Phoenix.LiveComponent
   import C4.Helpers.Web, only: [clean_assigns: 1]
+
   defmacro __using__(opts) do
     quote do
       use Phoenix.LiveView, unquote(opts)

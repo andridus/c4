@@ -6,7 +6,6 @@ defmodule C4.Api do
     quote do
       import Ecto.Query
       import C4.Api
-      
 
       def schema do
         @schema
@@ -21,19 +20,20 @@ defmodule C4.Api do
       end
 
       def get_by(id, params \\ [where: [], order: [asc: :inserted_at]]) do
-        get_by!(id, params)
+        get_by!(params)
         |> case do
           nil -> {:error, :not_found}
           data -> {:ok, data}
         end
       end
+
       def get_by!(params \\ [where: [], order: [asc: :inserted_at]]) do
         params
         |> default_params()
         |> repo().one()
       end
 
-      def get(id, params \\ [where: [], order: [asc: :inserted_at]]) do 
+      def get(id, params \\ [where: [], order: [asc: :inserted_at]]) do
         get!(id, params)
         |> case do
           nil -> {:error, :not_found}
@@ -84,19 +84,22 @@ defmodule C4.Api do
         |> repo().delete()
       end
 
-
       def default_params(params) do
         params
         |> Enum.reduce(schema(), fn
           {:where, params}, sch ->
-            params = Enum.reduce(params, sch, fn 
-              {{:ilike, key}, value}, sch ->
-                value = "%#{value}%"
-                sch |> where([p], ilike(field(p, ^key), ^value))
-              {key, nil}, sch ->
-                sch |> where([p], is_nil(field(p, ^key)))
-              x, sch -> sch |> where(^Keyword.new([x]))
-            end)
+            params =
+              Enum.reduce(params, sch, fn
+                {{:ilike, key}, value}, sch ->
+                  value = "%#{value}%"
+                  sch |> where([p], ilike(field(p, ^key), ^value))
+
+                {key, nil}, sch ->
+                  sch |> where([p], is_nil(field(p, ^key)))
+
+                x, sch ->
+                  sch |> where(^Keyword.new([x]))
+              end)
 
           {:order, params}, sch ->
             sch |> order_by(^params)
@@ -114,6 +117,7 @@ defmodule C4.Api do
             sch
         end)
       end
+
       def count(params \\ []) do
         params
         |> default_params()
@@ -151,7 +155,7 @@ defmodule C4.Api do
   end
 
   def repo do
-   C4.repo()
+    C4.repo()
   end
 
   def preload_json(model, include \\ []) do

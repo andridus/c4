@@ -2,6 +2,7 @@ defmodule C4.Component do
   @moduledoc false
   use Phoenix.LiveComponent
   import C4.Helpers.Web, only: [clean_assigns: 1]
+
   defmacro __using__(_opts) do
     quote do
       use Phoenix.LiveComponent
@@ -136,7 +137,6 @@ defmodule C4.Component do
     end
   end
 
-
   def render(assigns), do: ~H".."
 
   defmacro sigil_J({:<<>>, meta, [template]}, []) do
@@ -223,12 +223,13 @@ defmodule C4.Component do
   end
 
   defmacro view(do: block) do
-    b = block
-        |> Macro.prewalk(fn
-          {:<<>>, x, args} -> {:<<>>, x, parse_heex(args)}
-          c -> c
-        end)
-  
+    b =
+      block
+      |> Macro.prewalk(fn
+        {:<<>>, x, args} -> {:<<>>, x, parse_heex(args)}
+        c -> c
+      end)
+
     quote do
       def render(var!(assigns)) do
         unquote(b)
@@ -237,39 +238,41 @@ defmodule C4.Component do
   end
 
   defmacro dom(do: block) do
-  b = block
+    b =
+      block
       |> Macro.prewalk(fn
         {:<<>>, x, args} -> {:<<>>, x, parse_heex(args)}
         c -> c
       end)
+
     options = [
-          engine: Phoenix.LiveView.HTMLEngine,
-          file: __CALLER__.file,
-          line: __CALLER__.line + 1,
-          module: __CALLER__.module,
-          indentation: 0
-        ]
-    #EEx.compile_string(expr, options)
+      engine: Phoenix.LiveView.HTMLEngine,
+      file: __CALLER__.file,
+      line: __CALLER__.line + 1,
+      module: __CALLER__.module,
+      indentation: 0
+    ]
+
+    # EEx.compile_string(expr, options)
     quote do
       def render(var!(assigns)) do
-          unquote(block)
-          |> C4.Dom.dom(var!(assigns))
-          |> EEx.compile_string(unquote(options))
-          |> Code.eval_quoted([assigns: var!(assigns)], __ENV__)
-          |> elem(0)
-          
+        unquote(block)
+        |> C4.Dom.dom(var!(assigns))
+        |> EEx.compile_string(unquote(options))
+        |> Code.eval_quoted([assigns: var!(assigns)], __ENV__)
+        |> elem(0)
       end
+
       # def render(var!(assigns)) do
       #   ~H"""
       #     <div>loading</div>
       #   """
       # end
-      
     end
   end
 
   defmacro v(value, default \\ "") do
-    #Macro.Env.has_var?(__CALLER__, {:assigns, nil})
+    # Macro.Env.has_var?(__CALLER__, {:assigns, nil})
     quote do
       C4.Value.get(var!(assigns), unquote(value), unquote(default))
     end

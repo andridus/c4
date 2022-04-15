@@ -37,11 +37,11 @@ defmodule C4.Helpers.HandleEvent do
   def update_field(data, %{"type" => type, "field" => field, "value" => value} = params) do
     case type do
       "tags" ->
-            current_value = C4.Value.get(data, field)
-            new_value =
-              C4.Value.parse_from_item(data, type, field, value)
-            value = [new_value | current_value] |> Enum.uniq() |> Enum.reverse()
-            C4.Value.insert(data, field, value, params["idx"])
+        current_value = C4.Value.get(data, field)
+        new_value = C4.Value.parse_from_item(data, type, field, value)
+        value = [new_value | current_value] |> Enum.uniq() |> Enum.reverse()
+        C4.Value.insert(data, field, value, params["idx"])
+
       # "tags" ->
       #   case params["key"] do
       #     v when v in ["Enter", ","] ->
@@ -59,7 +59,6 @@ defmodule C4.Helpers.HandleEvent do
 
       "select_multiple" ->
         if value !== "" do
-
           current_value = C4.Value.get(data, field)
           new_value = C4.Value.parse_from_item(data, type, field, value)
           value = [new_value | current_value] |> List.flatten() |> Enum.uniq() |> Enum.reverse()

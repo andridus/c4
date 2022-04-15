@@ -51,8 +51,7 @@ defmodule C4.Helpers do
   def ok(value), do: {:ok, value}
   def unwrap({:ok, value}), do: value
   def unwrap(err), do: err
-  def unwrap!({_,value}), do: value
-  
+  def unwrap!({_, value}), do: value
 
   def update_changes(old_map, new_map) when is_map(new_map) do
     Map.to_list(new_map)
@@ -78,6 +77,7 @@ defmodule C4.Helpers do
       String.slice(string, 0, len) <> "..."
     end
   end
+
   def ellipse(value, _len), do: value
 
   def unique(len) do

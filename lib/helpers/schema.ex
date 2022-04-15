@@ -23,10 +23,10 @@ defmodule C4.Helpers.Schema do
            x.errors |> Enum.map(fn {k, {msg, _}} -> {"#{atom}.#{k}", msg} end)
          end)
          |> List.flatten()
-         |> Enum.reduce(data, fn {k, v}, data -> 
-          value = if is_nil(gettext), do: v, else: Gettext.dgettext(gettext,"errors", v)
-          C4.Value.insert(data, "errors.#{k}", value) 
-        end)}
+         |> Enum.reduce(data, fn {k, v}, data ->
+           value = if is_nil(gettext), do: v, else: Gettext.dgettext(gettext, "errors", v)
+           C4.Value.insert(data, "errors.#{k}", value)
+         end)}
     end
   end
 
