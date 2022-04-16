@@ -210,7 +210,9 @@ defmodule C4.Component do
     end
   end
 
-  defmacro event(mfld, do: funct) do
+  defmacro event(mfld, opts \\ []) do
+    funct_0 = {:&, [],[{:/, [],[{{:., [], [{:__MODULE__, [], nil}, mfld]},[], []},2]}]}
+    funct = opts[:do] || funct_0
     quote do
       Module.put_attribute(__MODULE__, :events, {unquote(mfld), unquote(funct)})
     end
