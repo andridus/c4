@@ -234,7 +234,7 @@ defmodule C4.Value do
 
     case type do
       "boolean" ->
-        C4.Utils.convert(value, :bool)
+        C4.Helpers.convert(value, :bool)
 
       "deselect" ->
         nil

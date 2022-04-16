@@ -10,7 +10,7 @@ defmodule C4.Helpers.HandleEvent do
       ) do
     case type do
       v when v in ["select_multiple", "tags"] ->
-        current_value = C4.Value.get(data, field) |> C4.Utils.maybe([]) |> List.flatten()
+        current_value = C4.Value.get(data, field) |> C4.Helpers.maybe([]) |> List.flatten()
         value = C4.Value.parse_from_item(data, type, field, value)
 
         value =
@@ -78,14 +78,14 @@ defmodule C4.Helpers.HandleEvent do
       struct(String.to_atom(model))
       |> Map.take(String.split(fields, ",") |> Enum.map(&String.to_atom/1))
 
-    items = [{C4.Utils.unique(5), model} | C4.Value.get(data, field) || []]
+    items = [{C4.Helpers.unique(5), model} | C4.Value.get(data, field) || []]
     C4.Value.insert(data, field, items)
   end
 
   def remove_one(data, %{"idx" => idx_r, "field" => field}) do
     items =
       C4.Value.get(data, field)
-      |> C4.Utils.maybe([])
+      |> C4.Helpers.maybe([])
       |> Enum.filter(fn {idx, _item} -> idx != idx_r end)
 
     C4.Value.insert(data, field, items)

@@ -28,7 +28,7 @@ defmodule C4.Schema do
       import Ecto.Changeset
       import C4.Schema
 
-      alias C4.Utils
+      alias C4.Helpers
 
       @before_compile C4.Schema
       @primary_key {:id, :binary_id, autogenerate: true}

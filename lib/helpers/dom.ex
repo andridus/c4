@@ -58,7 +58,7 @@ defmodule C4.Dom do
         end
 
       atom ->
-        "<.live_component #{attributes(attrs_)} module={#{atom}} id=\"#{C4.Utils.unique(10)}\" />"
+        "<.live_component #{attributes(attrs_)} module={#{atom}} id=\"#{C4.Helpers.unique(10)}\" />"
     end
   end
 

@@ -1,4 +1,4 @@
-defmodule C4.Utils.Module do
+defmodule C4.Helpers.Module do
   @moduledoc false
   def concat(module_name, core) when is_atom(module_name) do
     Module.concat([core, module_name])
