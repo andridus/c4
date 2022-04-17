@@ -7,7 +7,7 @@ defmodule C4.Component do
     quote do
       use Phoenix.LiveComponent
       @before_compile unquote(__MODULE__)
-      import C4.Component
+      import C4.View
       import C4.Helpers.Web, only: [clean_assigns: 1]
       alias C4.Dom, as: H
 
