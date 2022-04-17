@@ -217,7 +217,7 @@ defmodule C4.View do
       opts
       |> Code.eval_quoted()
       |> case do
-        {[], _} -> %{live_action: page}
+        {[], _} -> if is_nil(page), do: %{}, else: %{live_action: page}
         {opts, []} -> Map.merge(%{live_action: page}, opts)
       end
       |> Macro.escape()
@@ -229,21 +229,7 @@ defmodule C4.View do
     end
   end
 
-  defmacro view(do: block) do
-    b =
-      block
-      |> Macro.prewalk(fn
-        {:<<>>, x, args} -> {:<<>>, x, parse_heex(args)}
-        c -> c
-      end)
-
-    quote do
-      def render(var!(assigns)) do
-        unquote(b)
-      end
-    end
-  end
-
+  
   @doc """
     command :command, opts
     command {:command, args}, opts (when args is a list of atom)
