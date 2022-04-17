@@ -398,14 +398,26 @@ defmodule C4.View do
 
   def run_effect(%{assigns: %{run_once: false}} = socket, {event, opts}) do
     module = socket.assigns.self_module
-    with id when not is_nil(id) <- socket.assigns[:id],
-      {:every, seconds, id} <- {:every, opts[:every], id} do
-        opts = opts ++ [effect: true]
-        send_update_after(self(), module, [id: id, __event__: event, __opts__: opts], seconds)
+    id = socket.assigns[:id]
+    if !is_nil(id) do
+      case opts[:every] do
+        nil ->
+          send_update(self(), module, id: id, __event__: event)
+  
+        sec ->
+          opts = opts ++ [effect: true]
+          send_update_after(self(), module, [id: id, __event__: event, __opts__: opts], sec)
+      end
     else
-      {:every, nil, id} ->
-        send_update(self(), module, id: id, __event__: event)
-      _ -> nil
+      case opts[:every] do
+        nil ->
+          Process.send_after(self(), {event, __opts__: opts}, 0)
+  
+        sec ->
+          opts = opts ++ [effect: true]
+          Process.send_after(self(), {event, __opts__: opts}, sec)
+      end
+      socket
     end
   end
 
