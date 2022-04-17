@@ -398,7 +398,7 @@ defmodule C4.View do
 
   def run_effect(%{assigns: %{run_once: false}} = socket, {event, opts}) do
     module = socket.assigns.self_module
-    id = socket.assigns.id
+    id = C4.Value.get(socket.assigns, "id", C4.Values.get(socket.assigns, "__session__._csrf_token"))
     # params = if is_function(func,0), do: func.()
     case opts[:every] do
       nil ->
