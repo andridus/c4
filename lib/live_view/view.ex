@@ -332,10 +332,10 @@ defmodule C4.View do
   def apply_command(_socket, _list, _commands, _javascripts \\ [])
   def apply_command(socket, [], _commands, _javascripts), do: socket
 
-  def apply_command(socket, [command | list], commands, _javascripts) do
+  def apply_command(socket, [command | list], commands, javascripts) do
     socket
-    |> apply_command(command, commands)
-    |> apply_command(list, commands)
+    |> apply_command(command, commands, javascripts)
+    |> apply_command(list, commands, javascripts)
   end
 
   def apply_command(socket, {:javascript, atom}, _commands, javascripts) do
@@ -359,6 +359,11 @@ defmodule C4.View do
     end
 
     # socket
+  end
+
+  def apply_command(socket, {:event, evt}, _commands, _javascripts) do
+    module = socket.assigns.self_module
+    call_event_priv(socket, %{id: socket.assigns[:id], module: module, event: evt, opts: []})
   end
 
   def apply_command(socket, {command, args}, commands, _javascripts) do
@@ -389,6 +394,8 @@ defmodule C4.View do
     end
   end
 
+  
+
   def apply_effects(socket, []), do: socket
 
   def apply_effects(socket, [sub | tail]) do
@@ -398,28 +405,33 @@ defmodule C4.View do
 
   def run_effect(%{assigns: %{run_once: false}} = socket, {event, opts}) do
     module = socket.assigns.self_module
-    id = socket.assigns[:id]
-    if !is_nil(id) do
-      case opts[:every] do
-        nil ->
-          send_update(self(), module, id: id, __event__: event)
-  
-        sec ->
-          opts = opts ++ [effect: true]
-          send_update_after(self(), module, [id: id, __event__: event, __opts__: opts], sec)
-      end
-    else
-      case opts[:every] do
-        nil ->
-          Process.send_after(self(), {event, __opts__: opts}, 0)
-  
-        sec ->
-          opts = opts ++ [effect: true]
-          Process.send_after(self(), {event, __opts__: opts}, sec)
-      end
-      socket
-    end
+    call_event_priv(socket, %{id: socket.assigns[:id], module: module, event: event, opts: opts})
   end
+
+  defp call_event_priv(socket, %{id: nil, module: module, event: event, opts: opts}) do
+    case opts[:every] do
+      nil ->
+        Process.send_after(self(), {event, __opts__: opts}, 0)
+      sec ->
+        opts = opts ++ [effect: true]
+        Process.send_after(self(), {event, __opts__: opts}, sec)
+    end
+    socket
+  end
+
+  defp call_event_priv(socket, %{id: id, module: module, event: event, opts: opts}) do
+    case opts[:every] do
+      nil ->
+        send_update(self(), module, id: id, __event__: event)
+  
+      sec ->
+        opts = opts ++ [effect: true]
+        send_update_after(self(), module, [id: id, __event__: event, __opts__: opts], sec)
+    end
+    socket
+  end
+
+  
 
   def run_effect(socket, _), do: socket
 
