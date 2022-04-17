@@ -239,7 +239,7 @@ defmodule C4.View do
         {atom, args} -> {atom, args}
         atom -> {atom, []}
       end
-    funct = {:&, [],[{:/, [],[{{:., [], [{:__MODULE__, [], nil}, cmd]},[], []},2]}]}
+    funct = {:&, [],[{:/, [],[{{:., [], [{:__MODULE__, [], nil}, atom]},[], []},Enum.count(args)+1]}]}
     opts = Keyword.put_new(opts, :do, funct)
     cmd = {atom, args}
     quote do
