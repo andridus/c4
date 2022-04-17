@@ -377,7 +377,7 @@ defmodule C4.View do
 
   def apply_command(socket, command, commands, _javascripts) when is_atom(command) do
     Enum.find(commands, fn
-      {c, _} -> c == command
+      {{c, []}, _} -> c == command
       _ -> false
     end)
     |> case do
