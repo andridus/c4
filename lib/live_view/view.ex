@@ -398,15 +398,14 @@ defmodule C4.View do
 
   def run_effect(%{assigns: %{run_once: false}} = socket, {event, opts}) do
     module = socket.assigns.self_module
-    id = C4.Value.get(socket.assigns, "id", C4.Values.get(socket.assigns, "__session__._csrf_token"))
-    # params = if is_function(func,0), do: func.()
-    case opts[:every] do
-      nil ->
-        send_update(self(), module, id: id, __event__: event)
-
-      sec ->
+    with id when not is_nil(id) <- socket.assigns[:id],
+      {:every, seconds} <- opts[:every] do
         opts = opts ++ [effect: true]
-        send_update_after(self(), module, [id: id, __event__: event, __opts__: opts], sec)
+        send_update_after(self(), module, [id: id, __event__: event, __opts__: opts], seconds)
+    else
+      {:every, nil} ->
+        send_update(self(), module, id: id, __event__: event)
+      _ -> nil
     end
   end
 
