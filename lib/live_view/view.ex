@@ -234,6 +234,14 @@ defmodule C4.View do
     command {:command, args}, opts (when args is a list of atom)
   """
   defmacro command(cmd, opts \\ []) do
+    {atom, args} = 
+      case cmd do
+        {atom, args} -> {atom, args}
+        atom -> {atom, []}
+      end
+    funct = {:&, [],[{:/, [],[{{:., [], [{:__MODULE__, [], nil}, cmd]},[], []},2]}]}
+    opts = Keyword.put_new(opts, :do, funct)
+    cmd = {atom, args}
     quote do
       Module.put_attribute(__MODULE__, :commands, {unquote(cmd), unquote(opts)})
     end
@@ -259,18 +267,6 @@ defmodule C4.View do
     end
   end
 
-  def apply_fields(socket) do
-    fields = socket.assigns[:__fields__]
-    apply_fields(socket, fields)
-  end
-
-  def apply_fields(socket, []), do: socket
-
-  def apply_fields(socket, [{fld, type, opts} | tail]) do
-    apply_fields_private(socket, {fld, type, opts})
-    |> apply_default_fields(tail)
-  end
-
   def apply_default_fields(socket) do
     fields = socket.assigns[:__fields__]
     apply_default_fields(socket, fields)
@@ -284,15 +280,34 @@ defmodule C4.View do
     |> apply_default_fields(tail)
   end
 
+  def apply_fields(socket) do
+    fields = socket.assigns[:__fields__]
+    apply_fields(socket, fields)
+  end
+
+  def apply_fields(socket, []), do: socket
+
+  def apply_fields(socket, [{fld, type, opts} | tail]) do
+    apply_fields_private(socket, {fld, type, opts})
+    |> apply_default_fields(tail)
+  end
+
   def apply_fields_private(socket, {fld, _type, opts}) do
-    value = opts[:default] || opts[:value] || ""
-    format = opts[:format] || nil
+    default = opts[:default]
+
+    value =
+      cond do
+        is_nil(default) -> opts[:value]
+        :else -> default
+      end
+
+    format = opts[:format]
     # GET VALUE
     value =
       cond do
         is_function(value, 0) -> value.()
         is_function(value, 1) -> value.(socket)
-        is_function(value) -> "#{value}"
+        is_function(value) -> value
         :else -> value
       end
 
@@ -311,16 +326,6 @@ defmodule C4.View do
       |> Enum.map(fn {key, value} -> {key, :field, value: value} end)
 
     apply_default_fields(socket, assigns)
-  end
-
-  def apply_update(socket, []), do: socket
-
-  def apply_update(socket, [{fld, _type, opts} | tail]) do
-    default_value = opts[:default] || opts[:value] || ""
-
-    socket
-    |> assign(fld, default_value)
-    |> apply_default_fields(tail)
   end
 
   def apply_command(_socket, _list, _commands, _javascripts \\ [])
@@ -391,24 +396,22 @@ defmodule C4.View do
   end
 
   def run_effect(%{assigns: %{run_once: false}} = socket, {event, opts}) do
+    module = socket.assigns.self_module
+    id = socket.assigns.id
     # params = if is_function(func,0), do: func.()
     case opts[:every] do
       nil ->
-        # send_update(self(), module, [id: id, __event__: event])
-        Process.send_after(self(), {event, __opts__: opts}, 0)
+        send_update(self(), module, id: id, __event__: event)
 
       sec ->
         opts = opts ++ [effect: true]
-
-        Process.send_after(self(), {event, __opts__: opts}, sec)
+        send_update_after(self(), module, [id: id, __event__: event, __opts__: opts], sec)
     end
-
-    socket
   end
 
   def run_effect(socket, _), do: socket
 
-  def get_opts(fields, field, key_opt, default \\ "") do
+  def get_opts(fields, field, key_opt, default \\ nil) do
     Enum.find(fields, fn {key, _, _} -> key == field end)
     |> case do
       nil -> "[no-schema-field]"
