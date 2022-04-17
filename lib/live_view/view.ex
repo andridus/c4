@@ -229,6 +229,21 @@ defmodule C4.View do
     end
   end
 
+  defmacro view(do: block) do
+    b =
+      block
+      |> Macro.prewalk(fn
+        {:<<>>, x, args} -> {:<<>>, x, parse_heex(args)}
+        c -> c
+      end)
+
+    quote do
+      def render(var!(assigns)) do
+        unquote(b)
+      end
+    end
+  end
+
   @doc """
     command :command, opts
     command {:command, args}, opts (when args is a list of atom)
