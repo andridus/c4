@@ -235,12 +235,12 @@ defmodule C4.View do
     command {:command, args}, opts (when args is a list of atom)
   """
   defmacro command(cmd, opts \\ []) do
-    {atom, args} = 
+    {atom, args, total_args} = 
       case cmd do
-        {atom, args} -> {atom, args}
-        atom -> {atom, []}
+        {atom, args} -> {atom, args, 2}
+        atom -> {atom, [], 1}
       end
-    funct = {:&, [],[{:/, [],[{{:., [], [{:__MODULE__, [], nil}, atom]},[], []}, 2]}]}
+    funct = {:&, [],[{:/, [],[{{:., [], [{:__MODULE__, [], nil}, atom]},[], []}, total_args]}]}
     opts = Keyword.put_new(opts, :do, funct)
     cmd = {atom, args}
     quote do
