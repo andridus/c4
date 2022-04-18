@@ -454,4 +454,7 @@ defmodule C4.View do
     # replace $() to get_opts() function
     [String.replace(content, "$(", "get_opts(@__fields__, ")]
   end
+  def c(opts) do
+    live_component([id: C4.Helpers.unique(10)] ++ opts)
+  end
 end
