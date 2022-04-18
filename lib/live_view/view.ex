@@ -455,6 +455,6 @@ defmodule C4.View do
     [String.replace(content, "$(", "get_opts(@__fields__, ")]
   end
   def c(opts) do
-    live_component([id: C4.Helpers.unique(10)] ++ opts)
+    live_component(Map.merge(opts, %{id: C4.Helpers.unique(10)}))
   end
 end
