@@ -167,7 +167,7 @@ defmodule C4.View do
       cnt = unquote(content)
       prefix = String.split("#{__MODULE__}", ".") |> Enum.join("_")
       hash = Base.encode64("#{prefix}_#{name}")
-      js_output_dir = Path.join([File.cwd!(), "assets/js/C4/"])
+      js_output_dir = Path.join([Application.get_env(:c4, :assets_path, File.cwd!()), "assets/js/C4/"])
       File.mkdir_p!(js_output_dir)
       dest_file = Path.join([js_output_dir, "#{hash}.js"])
       index_file = Path.join([js_output_dir, "index.js"])
