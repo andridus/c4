@@ -75,7 +75,7 @@ defmodule C4.Api do
 
       def delete(id) when is_bitstring(id) do
         id
-        |> get()
+        |> get!()
         |> delete()
       end
 
