@@ -37,7 +37,7 @@ defmodule C4.Api do
         get!(id, params)
         |> case do
           nil -> {:error, :not_found}
-          data -> {:ok, data}
+          {:ok, data} -> {:ok, data}
         end
       end
 
@@ -57,6 +57,9 @@ defmodule C4.Api do
         |> repo().all()
       end
 
+      def insert(%Ecto.Changeset{} = model) do
+        model |> repo().insert()
+      end
       def insert(params) do
         schema()
         |> struct()
@@ -64,6 +67,11 @@ defmodule C4.Api do
         |> repo().insert()
       end
 
+      
+
+      def update(%Ecto.Changeset{} = model) do
+        model |> repo().update()
+      end
       def update(%{id: id} = model) do
         params = Map.drop(model, [:id])
 
@@ -72,6 +80,10 @@ defmodule C4.Api do
         |> schema().changeset_update(params)
         |> repo().update()
       end
+
+      
+
+
 
       def delete(id) when is_bitstring(id) do
         id
