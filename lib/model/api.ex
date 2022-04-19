@@ -37,7 +37,7 @@ defmodule C4.Api do
         get!(id, params)
         |> case do
           nil -> {:error, :not_found}
-          {:ok, data} -> {:ok, data}
+          data -> {:ok, data}
         end
       end
 
