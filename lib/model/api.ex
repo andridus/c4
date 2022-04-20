@@ -148,6 +148,8 @@ defmodule C4.Api do
         |> Map.take(json_fields(include))
       end
 
+      def insert_or_update(%{action: :insert} = model) do: insert(model)
+      def insert_or_update(%{action: :update, data: %{id: _id}} = model) do: update(model)
       def insert_or_update(%{id: id} = model) when not is_nil(id), do: update(model)
       def insert_or_update(model), do: insert(model)
 
