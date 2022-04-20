@@ -61,6 +61,7 @@ defmodule C4.Schema do
       def tabs(), do: @tabs |> Enum.reverse()
 
       defp changeset_(model, attrs, :insert) do
+        model = %{model | action: :insert}
         {local_fields, assoc_fields, embed_fields} =
           __MODULE__.fields_()
           |> Enum.reduce({[], [], []}, fn
@@ -122,6 +123,7 @@ defmodule C4.Schema do
       end
 
       defp changeset_(model, attrs, :update) do
+        model = %{model | action: :update}
         keys = Map.keys(attrs)
 
         {local_fields, assoc_fields, embed_fields} =
