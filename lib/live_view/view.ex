@@ -18,8 +18,9 @@ defmodule C4.View do
       Module.register_attribute(__MODULE__, :javascripts, accumulate: true)
       Module.register_attribute(__MODULE__, :commands, accumulate: true)
 
-      def call_event(event, args) do
-        send(self(), event, args)
+      
+      def call_event(event, args \\ %{}) do
+        send(self(), {event, args})
       end
 
       def handle_params(params, uri, socket) do
