@@ -149,8 +149,11 @@ defmodule C4.View do
   def header_functions(prefix) do
     """
     \n
-    const push = function(atom, payload) {
-      liveSocket.getSocket().channels[0].push("port[#{prefix}]["+atom+"]", payload)
+    const push = function(atom, module = "#{prefix}", id, payload) {
+      liveSocket.getSocket().channels[0].push("port["+module+"]["+id+"]["+atom+"]", payload)
+    }
+    const push_self = function(atom, id, payload) {
+      liveSocket.getSocket().channels[0].push("port[#{prefix}]["+id+"]["+atom+"]", payload)
     }
     \n
     """
