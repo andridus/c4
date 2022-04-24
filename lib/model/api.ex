@@ -76,7 +76,7 @@ defmodule C4.Api do
         params = Map.drop(model, [:id])
 
         id
-        |> get()
+        |> get!()
         |> schema().changeset_update(params)
         |> repo().update()
       end
