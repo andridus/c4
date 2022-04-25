@@ -19,7 +19,7 @@ defmodule C4.Api do
         schema().json() ++ append
       end
 
-      def get_by(id, params \\ [where: [], order: [asc: :inserted_at]]) do
+      def get_by(params \\ [where: [], order: [asc: :inserted_at]]) do
         get_by!(params)
         |> case do
           nil -> {:error, :not_found}
