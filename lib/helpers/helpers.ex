@@ -29,7 +29,7 @@ defmodule C4.Helpers do
   def map_to_atom({key, val}) when is_map(val), do: {atomize(key), map_to_atom(val)}
 
   def map_to_atom({key, val}) when is_list(val),
-    do: {to_string(key), Enum.map(val, &map_to_atom(&1))}
+    do: {atomize(key), Enum.map(val, &map_to_atom(&1))}
 
   def map_to_atom({key, val}), do: {atomize(key), val}
 
