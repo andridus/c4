@@ -18,7 +18,7 @@ defmodule C4.View do
       Module.register_attribute(__MODULE__, :javascripts, accumulate: true)
       Module.register_attribute(__MODULE__, :commands, accumulate: true)
 
-      
+
       def call_event(event, args \\ %{}) do
         send(self(), {event, args})
       end
@@ -110,6 +110,9 @@ defmodule C4.View do
         def handle_info(%{event: event, payload: payload}, socket) do
           Regex.run(~r/\[(.*)\]\[(.*)\]\[(.*)\]/, event)
           |> case do
+            [_, module, "undefined", atom] ->
+              module = module |> String.split("_") |> Module.concat()
+              Process.send(self(), {String.to_atom(atom), payload}, [])
             [_, module, id, atom] ->
               module
               |> String.split("_")
@@ -154,6 +157,12 @@ defmodule C4.View do
     }
     const push_self = function(atom, id, payload) {
       liveSocket.getSocket().channels[0].push("port[#{prefix}]["+id+"]["+atom+"]", payload)
+    }
+    const push_self_view = function(atom, payload) {
+      liveSocket.getSocket().channels[0].push("port[#{prefix}][undefined]["+atom+"]", payload)
+    }
+    const push_view = function(atom, module = "#{prefix}", payload) {
+      liveSocket.getSocket().channels[0].push("port["+module+"][undefined]["+atom+"]", payload)
     }
     \n
     """
@@ -233,13 +242,13 @@ defmodule C4.View do
     end
   end
 
-  
+
   @doc """
     command :command, opts
     command {:command, args}, opts (when args is a list of atom)
   """
   defmacro command(cmd, opts \\ []) do
-    {atom, args, total_args} = 
+    {atom, args, total_args} =
       case cmd do
         {atom, args} -> {atom, args, 2}
         atom -> {atom, [], 1}
@@ -262,8 +271,8 @@ defmodule C4.View do
   end
 
   @doc """
-    field :field, :type, 
-          default: "value" || function, 
+    field :field, :type,
+          default: "value" || function,
           format: function
   """
   defmacro field(fld, type, opts) do
@@ -398,7 +407,7 @@ defmodule C4.View do
     end
   end
 
-  
+
 
   def apply_effects(socket, []), do: socket
 
@@ -427,7 +436,7 @@ defmodule C4.View do
     case opts[:every] do
       nil ->
         send_update(self(), module, id: id, __event__: event)
-  
+
       sec ->
         opts = opts ++ [effect: true]
         send_update_after(self(), module, [id: id, __event__: event, __opts__: opts], sec)
@@ -435,7 +444,7 @@ defmodule C4.View do
     socket
   end
 
-  
+
 
   def run_effect(socket, _), do: socket
 
