@@ -1,6 +1,6 @@
 defmodule C4.Schema do
   @moduledoc false
-  @live_opts [:required, :set_once, :to_json, :label, :opts]
+  @live_opts [:required, :unique, :update,  :set_once, :to_json, :label, :opts, :applies, :validate]
   @relation_opts @live_opts ++
                    [
                      :show,
