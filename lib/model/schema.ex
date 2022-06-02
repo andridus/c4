@@ -1,6 +1,6 @@
 defmodule C4.Schema do
   @moduledoc false
-  @live_opts [:required, :unique, :update,  :set_once, :to_json, :label, :opts, :applies, :validate]
+  @live_opts [:required, :unique, :update,  :size, :set_once, :to_json, :label, :opts, :applies, :validate]
   @relation_opts @live_opts ++
                    [
                      :show,
@@ -61,7 +61,7 @@ defmodule C4.Schema do
       def tabs(), do: @tabs |> Enum.reverse()
 
       defp changeset_(model, attrs, :insert) do
-        
+
         {local_fields, assoc_fields, embed_fields} =
           __MODULE__.fields_()
           |> Enum.reduce({[], [], []}, fn
@@ -124,14 +124,14 @@ defmodule C4.Schema do
       end
 
       defp changeset_(model, attrs, :update) do
-        
+
         keys = Map.keys(attrs)
 
         {local_fields, assoc_fields, embed_fields} =
           __MODULE__.fields_()
-          # |> Enum.filter(fn 
-          #   {key, _, _} -> 
-          #     key in keys 
+          # |> Enum.filter(fn
+          #   {key, _, _} ->
+          #     key in keys
           #   _ -> false
           # end)
           |> Enum.reduce({[], [], []}, fn
