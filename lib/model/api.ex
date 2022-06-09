@@ -67,7 +67,7 @@ defmodule C4.Api do
         |> repo().insert()
       end
 
-      
+
 
       def update(%Ecto.Changeset{} = model) do
         model |> repo().update()
@@ -81,7 +81,7 @@ defmodule C4.Api do
         |> repo().update()
       end
 
-      
+
 
 
 
@@ -112,7 +112,19 @@ defmodule C4.Api do
                 x, sch ->
                   sch |> where(^Keyword.new([x]))
               end)
+            {:or_where, params}, sch ->
+              params =
+                Enum.reduce(params, sch, fn
+                  {{:ilike, key}, value}, sch ->
+                    value = "%#{value}%"
+                    sch |> or_where([p], ilike(field(p, ^key), ^value))
 
+                  {key, nil}, sch ->
+                    sch |> or_where([p], is_nil(field(p, ^key)))
+
+                  x, sch ->
+                    sch |> or_where(^Keyword.new([x]))
+                end)
           {:order, params}, sch ->
             sch |> order_by(^params)
 
